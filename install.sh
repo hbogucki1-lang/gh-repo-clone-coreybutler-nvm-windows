@@ -279,14 +279,14 @@ nvm_detect_npm_global_packages() {
   if nvm_has "node"; then
     local NODE_SYS
     NODE_SYS="$(command which node)"
-    if [ "${NODE_SYS}" != "" ] && nvm_grep -qe "${NODE_SYS}" /etc/passwd 2> /dev/null; then
+    if [ -n "${NODE_SYS}" ] && printf '%s' "${NODE_SYS}" | nvm_grep -qe "^/usr" 2> /dev/null; then
       return
     fi
   fi
 }
 
 nvm_do_install() {
-  if [ -n "${NVM_DIR-}" ] && ! [ -d "${NVM_DIR}" ] && nvm_grep -qe "^/" <<< "${NVM_DIR}" && ! printf '%s' "${NVM_DIR}" | nvm_grep -qe "/$"; then
+  if [ -n "${NVM_DIR-}" ] && ! [ -d "${NVM_DIR}" ] && printf '%s' "${NVM_DIR}" | nvm_grep -qe "^/" && ! printf '%s' "${NVM_DIR}" | nvm_grep -qe "/$"; then
     # if $NVM_DIR is set and doesn't exist and begins with / and doesn't end with /
     true
   elif [ -n "${NVM_DIR-}" ] && ! [ -d "${NVM_DIR}" ] && [ -e "${NVM_DIR}" ]; then
