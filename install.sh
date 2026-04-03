@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+# NOTE: This script installs nvm for Linux/macOS (POSIX shells) only.
+# If you are on Windows, do NOT run this script.
+# Install nvm-windows instead: https://github.com/coreybutler/nvm-windows/releases/latest
+# Download nvm-setup.exe, run it as Administrator, then use `nvm` from PowerShell or cmd.
+
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|CYGWIN*|MSYS*)
+    echo "ERROR: This script does not support Windows." >&2
+    echo "Please install nvm-windows from https://github.com/coreybutler/nvm-windows/releases/latest" >&2
+    exit 1
+    ;;
+esac
 
 { # this ensures the entire script is downloaded #
 
