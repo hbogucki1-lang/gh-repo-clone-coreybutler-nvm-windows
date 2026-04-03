@@ -51,16 +51,11 @@ nvm_profile_is_bash_or_zsh() {
 nvm_source() {
   local NVM_GITHUB_REPO
   NVM_GITHUB_REPO="${NVM_INSTALL_GITHUB_REPO:-nvm-sh/nvm}"
-  if [ "_$NVM_GITHUB_REPO" = "_nvm-sh/nvm" ] ; then
-    local NVM_VERSION
-    NVM_VERSION="${NVM_INSTALL_VERSION:-$(nvm_latest_version)}"
-    NVM_SOURCE_URL="https://github.com/${NVM_GITHUB_REPO}/archive/${NVM_VERSION}.tar.gz"
-  else
-    local NVM_VERSION
-    NVM_VERSION="${NVM_INSTALL_VERSION:-$(nvm_latest_version)}"
-    NVM_SOURCE_URL="https://github.com/${NVM_GITHUB_REPO}/archive/${NVM_VERSION}.tar.gz"
-  fi
-  nvm_echo "${NVM_SOURCE_URL:-}"
+  local NVM_VERSION
+  NVM_VERSION="${NVM_INSTALL_VERSION:-$(nvm_latest_version)}"
+  local NVM_SOURCE_URL
+  NVM_SOURCE_URL="https://github.com/${NVM_GITHUB_REPO}/archive/${NVM_VERSION}.tar.gz"
+  nvm_echo "${NVM_SOURCE_URL}"
 }
 
 #
@@ -174,7 +169,7 @@ nvm_install_node() {
   nvm install "${NODE_VERSION_LOCAL}"
   local NVM_CURRENT_NODE_VERSION
   NVM_CURRENT_NODE_VERSION="$(nvm_version)"
-  if [ "$(nvm_version "${NODE_VERSION_LOCAL}")" == "${NVM_CURRENT_NODE_VERSION}" ]; then
+  if [ "$(nvm_version "${NODE_VERSION_LOCAL}")" = "${NVM_CURRENT_NODE_VERSION}" ]; then
     nvm_echo "=> Node.js version ${NODE_VERSION_LOCAL} has been successfully installed"
   else
     nvm_echo >&2 "Failed to install Node.js ${NODE_VERSION_LOCAL}"
@@ -291,13 +286,13 @@ nvm_detect_npm_global_packages() {
 }
 
 nvm_do_install() {
-  if [ -n "${NVM_DIR-}" ] && ! [ -d "${NVM_DIR}" ] && nvm_grep -qe "^/" <<< "${NVM_DIR}" && ! nvm_grep -qe "/$" <<< "${NVM_DIR}"; then
+  if [ -n "${NVM_DIR-}" ] && ! [ -d "${NVM_DIR}" ] && nvm_grep -qe "^/" <<< "${NVM_DIR}" && ! printf '%s' "${NVM_DIR}" | nvm_grep -qe "/$"; then
     # if $NVM_DIR is set and doesn't exist and begins with / and doesn't end with /
     true
   elif [ -n "${NVM_DIR-}" ] && ! [ -d "${NVM_DIR}" ] && [ -e "${NVM_DIR}" ]; then
     nvm_echo >&2 "File '${NVM_DIR}' has the same name as installation directory."
     exit 1
-  elif [ -n "${NVM_DIR-}" ] && nvm_grep -qe "/$" <<< "${NVM_DIR}"; then
+  elif [ -n "${NVM_DIR-}" ] && printf '%s' "${NVM_DIR}" | nvm_grep -qe "/$"; then
     nvm_echo >&2 "NVM_DIR must not have trailing slash."
     exit 1
   fi
@@ -346,11 +341,11 @@ nvm_do_install() {
   if [ -z "${NVM_PROFILE-}" ] ; then
     local TRIED_PROFILE
     if [ -n "${PROFILE}" ]; then
-      TRIED_PROFILE="${NVM_PROFILE} (as defined in \$PROFILE)"
+      TRIED_PROFILE="${PROFILE} (as defined in \$PROFILE)"
     else
-      TRIED_PROFILE="${NVM_PROFILE}"
+      TRIED_PROFILE="(none)"
     fi
-    nvm_echo "=> Profile not found. Tried ${TRIED_PROFILE} (as defined in \$PROFILE), ~/.bashrc, ~/.bash_profile, ~/.zprofile, ~/.zshrc, and ~/.profile."
+    nvm_echo "=> Profile not found. Tried ${TRIED_PROFILE}, ~/.bashrc, ~/.bash_profile, ~/.zprofile, ~/.zshrc, and ~/.profile."
     nvm_echo "=> Create one of them and run this script again"
     nvm_echo "   OR"
     nvm_echo "=> Append the following lines to the correct file yourself:"
@@ -398,7 +393,7 @@ nvm_reset() {
   unset -f nvm_has nvm_install_dir nvm_latest_version nvm_profile_is_bash_or_zsh \
     nvm_source nvm_node_version nvm_download install_nvm_from_git nvm_install_node \
     install_nvm_as_script nvm_try_profile nvm_detect_profile \
-    nvm_check_global_modules nvm_do_install nvm_reset nvm_default_install_dir \
+    nvm_do_install nvm_reset nvm_default_install_dir \
     nvm_grep nvm_detect_npm_global_packages nvm_echo
 }
 
