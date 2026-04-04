@@ -8,8 +8,12 @@
 
 ## Installing nvm-windows (Windows)
 
+> ⚠️ **Do NOT clone this repository or the nvm-windows source repo to install nvm-windows.**
+> Cloning gives you the raw source code, which must be compiled before it can be used.
+> You do not need to build anything yourself — use the pre-built installer below.
+
 1. Go to the [Releases page](https://github.com/coreybutler/nvm-windows/releases/latest).
-2. Download **`nvm-setup.exe`**.
+2. Download **`nvm-setup.exe`** (the pre-built Windows installer — not the source code ZIP).
 3. Run the installer **as Administrator** and follow the prompts.
 4. **Close and reopen** PowerShell (or Command Prompt) so the updated `PATH` takes effect.
 
@@ -18,6 +22,8 @@ Verify the installation:
 ```powershell
 nvm version
 ```
+
+> **Tip:** If you accidentally cloned the nvm-windows source repository, you can simply delete that folder — it is not needed. Open a **new** PowerShell window after running `nvm-setup.exe` and type `nvm version` to confirm it is installed. To navigate into a folder in PowerShell use `cd <path>`, not the path alone.
 
 ### Basic usage
 
